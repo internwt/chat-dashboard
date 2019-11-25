@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>ChatIO</title>
+	<link rel="stylesheet" href="main.css">
+</head>
+<body>
+	<div id="container">
+		<div id="namesWrapper">
+			<h2>ChatIO</h2>
+			<p>Create Username:</p>
+			<div id="error"></div>
+			<form id="usernameForm">
+				<input type="text" size="35" id="username">
+				<input type="submit" value="Submit">
+			</form>
+		</div>
+
+		<div id="mainWrapper">
+			<h2>Chat Dashboard</h2>
+			<div id="chatWrapper">
+				<div id="chatWindow"></div>
+				<form id="messageForm">
+					<input type="text" size="35" id="message" placeholder="Say Something...">
+					<input type="submit" value="Submit">
+				</form>
+			</div>
+
+			<div id="userWrapper">
+                <h3>Online users</h3>
+				<div id="users"></div>
+			</div>
+		</div>
+	</div>
+
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+		<script>
+		$(function(){
+			var socket = io.connect();
+			var $messageForm = $('#messageForm');
+			var $message = $('#message');
+			var $chat = $('#chatWindow');
+			var $usernameForm = $('#usernameForm');
+			var $users = $('#users');
+			var $username = $('#username');
+			var $error = $('#error');
+               
+			$usernameForm.submit(function(e){
+				e.preventDefault();
+				socket.emit('new user', $username.val(),(data)=>{
+                    console.log($username.val())
+					if(data){
+                        alert(`${$username.val()} also joined with you`)
+						$('#namesWrapper').hide();
+						$('#mainWrapper').show();
+					} else{
+						$error.html('Username is taken,please take another name');
+					}
+				});
+			});
+
+			socket.on('usernames', (data)=>{
+				var html = '';
+				for(i = 0;i < data.length;i++){
+					html += `${i+1} `+ data[i] + '<br>';
+				}
+				$users.html(html);
+			});
+
+			$messageForm.submit((e)=>{
+				e.preventDefault();
+				socket.emit('send message', $message.val());
+				$message.val('');
+			});
+
+			socket.on('new message', (data)=>{
+				$chat.append('<strong>'+data.user+'</strong>: '+data.msg+'<br>');
+			});
+
+		});
+		</script>
+</body>
+</html>
