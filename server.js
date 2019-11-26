@@ -1,8 +1,8 @@
 var express = require('express')
-var	app = express();
-var	server = require('http').createServer(app);
-var	io = require('socket.io').listen(server);
-var	usernames = [];
+var app = express();
+var server = require('http').createServer(app);
+var io = require('socket.io').listen(server);
+var usernames = [];
 var PORT = 3000
 server.listen(process.env.PORT ||PORT);
 console.log(`Server Running.. ...........  port${PORT}`);
@@ -15,7 +15,7 @@ app.get('/main.css', (req, res) =>  res.sendFile(__dirname + "/" + "main.css")
   );
 
 io.sockets.on('connection',(socket)=>{
-	console.log('Socket has Connected.......');
+	console.log('Socket has Connected...with the... server....');
 
 	socket.on('new user', (data, callback)=>{
 		if(usernames.indexOf(data) != -1){
